@@ -117,7 +117,6 @@ int main(void) {
 		/* USER CODE BEGIN 3 */
 
 		if (adcValue < 50) adcValue = 0; // Simple thresholding to avoid noise at low values
-
 		float potVoltage = analogToVoltage(adcValue); // Convert ADC value to voltage
 		float dutyCycle = map(potVoltage, 0.0, 3.3, 0.0, 100.0); // Map voltage to duty cycle percentage
 		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, (dutyCycle / 100.0) * (htim3.Init.Period + 1)); // Update PWM duty cycle based on ADC reading
