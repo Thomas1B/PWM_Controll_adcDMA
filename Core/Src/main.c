@@ -60,6 +60,17 @@ static void MX_TIM3_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 float analogToVoltage(unsigned int val);
+
+/*
+ * @brief Utility function to map a value from one range to another
+ * @param x The value to map
+ * @param in_min The lower bound of the input range
+ * @param in_max The upper bound of the input range
+ * @param out_min The lower bound of the output range
+ * @param out_max The upper bound of the output range
+ * @return The mapped value in the output range
+ *
+ */
 float map(float x, float in_min, float in_max, float out_min, float out_max) { // Utility function to map a value from one range to another
 	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
@@ -116,13 +127,19 @@ int main(void) {
 
 		/* USER CODE BEGIN 3 */
 
-		if (adcValue < 50) adcValue = 0; // Simple thresholding to avoid noise at low values
+		if (adcValue < 50)
+			adcValue = 0; // Simple thresholding to avoid noise at low values
 		float potVoltage = analogToVoltage(adcValue); // Convert ADC value to voltage
-		float dutyCycle = map(potVoltage, 0.0, 3.3, 0.0, 100.0); // Map voltage to duty cycle percentage
-		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, (dutyCycle / 100.0) * (htim3.Init.Period + 1)); // Update PWM duty cycle based on ADC reading
+		float dutyCycle = map(potVoltage, 0.0, 3.3, 0.0, 2000); // Map voltage to duty cycle percentage
+		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3,dutyCycle );// Update PWM duty cycle based on ADC reading
 
 		// Compact version without intermediate variables:
-		//__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, adcValue * (htim3.Init.Period + 1) / 4095); // Directly set compare value based on ADC reading
+//		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, adcValue * (htim3.Init.Period + 1) / 4095); // Directly set compare value based on ADC reading
+
+		// Control for ESC
+//		float dutyCycle = map(potVoltage, 0.0, 3.3, 1100, 1900); // Map voltage to duty cycle percentage
+//		printf("%0.2f\n", dutyCycle); // Print duty cycle for debugging")
+//		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, dutyCycle); // Update PWM duty cycle based on ADC reading
 	}
 	/* USER CODE END 3 */
 }
