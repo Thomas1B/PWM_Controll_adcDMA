@@ -24,5 +24,6 @@ In USER CODE BEGIN 3 add:
 ```
 
 Note `htim3.Init.Period` is created by STM32CubeMX, it is the ARR found in the ADC settings.<br>
-The "+1" depends on how you enter values for the ARR during set up, [explanation here](https://github.com/Thomas1B/STM_basicPWM/tree/main#setup-example-500-hz-pwm-tim3).
+The "+1" depends on how you enter values for the ARR during set up, [explanation here](https://github.com/Thomas1B/STM_basicPWM/tree/main#setup-example-500-hz-pwm-tim3).<br>
+For simplicity, you could just enter that ARR value if you don't plan on changing it.
 
