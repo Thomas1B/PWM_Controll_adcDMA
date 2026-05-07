@@ -59,6 +59,7 @@ float analogToVoltage(unsigned int val) {
 This is in USER CODE BEGIN 3
 ```C
 // Control for ESC
+float potVoltage = analogToVoltage(adcValue); // Convert ADC value to voltage
 float timeON = map(potVoltage, 0.0, 3.3, 1100, 1900); // Map voltage to duty cycle percentage
 __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, timeON); // Update PWM duty cycle based on ADC reading
 ```
