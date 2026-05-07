@@ -43,7 +43,7 @@ The 4095 is based on a 12-bit ADC resolution.
 
 ESC input duty cycle: 1100us for reverse 100%, 1900us for forward 100%, and 1500us for stop.
 
-This is in Private user code
+This is in USER CODE BEGIN 0
 ```C
 // This is the map function commonly used in Arduino
 float map(float x, float in_min, float in_max, float out_min, float out_max) { // Utility function to map a value from one range to another
