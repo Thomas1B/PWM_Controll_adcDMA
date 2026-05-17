@@ -34,34 +34,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := PWM_Controll_adcDMA
+BUILD_ARTIFACT_NAME := PWM_Controller_adcDMA
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-PWM_Controll_adcDMA.elf \
+PWM_Controller_adcDMA.elf \
 
 MAP_FILES += \
-PWM_Controll_adcDMA.map \
+PWM_Controller_adcDMA.map \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-PWM_Controll_adcDMA.list \
+PWM_Controller_adcDMA.list \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: PWM_Controll_adcDMA.elf secondary-outputs
+main-build: PWM_Controller_adcDMA.elf secondary-outputs
 
 # Tool invocations
-PWM_Controll_adcDMA.elf PWM_Controll_adcDMA.map: $(OBJS) $(USER_OBJS) C:\Users\thoma\STM32CubeIDE\workspace_2.1.1\PWM_Controll_adcDMA\STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "PWM_Controll_adcDMA.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\thoma\STM32CubeIDE\workspace_2.1.1\PWM_Controll_adcDMA\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="PWM_Controll_adcDMA.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+PWM_Controller_adcDMA.elf PWM_Controller_adcDMA.map: $(OBJS) $(USER_OBJS) C:\Users\thoma\STM32CubeIDE\workspace_2.1.1\PWM_Controller_adcDMA\STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "PWM_Controller_adcDMA.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\thoma\STM32CubeIDE\workspace_2.1.1\PWM_Controller_adcDMA\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="PWM_Controller_adcDMA.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -70,14 +70,14 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-PWM_Controll_adcDMA.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "PWM_Controll_adcDMA.list"
+PWM_Controller_adcDMA.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "PWM_Controller_adcDMA.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) PWM_Controll_adcDMA.elf PWM_Controll_adcDMA.list PWM_Controll_adcDMA.map default.size.stdout
+	-$(RM) PWM_Controller_adcDMA.elf PWM_Controller_adcDMA.list PWM_Controller_adcDMA.map default.size.stdout
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)

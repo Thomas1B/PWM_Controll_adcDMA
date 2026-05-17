@@ -45,6 +45,7 @@ ESC input duty cycle: 1100us for reverse 100%, 1900us for forward 100%, and 1500
 
 This is in USER CODE BEGIN 0
 ```C
+/* USER CODE BEGIN PFP */
 // This is the map function commonly used in Arduino
 float map(float x, float in_min, float in_max, float out_min, float out_max) { // Utility function to map a value from one range to another
 	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
@@ -54,6 +55,7 @@ float analogToVoltage(unsigned int val) {
 	// 4095 is based on 12-bit ADC resolution
 	return ((float) val * 3.3) / 4095;
 }
+/* USER CODE END PFP */
 ```
 
 This is in USER CODE BEGIN 3
@@ -64,3 +66,37 @@ float timeON = map(potVoltage, 0.0, 3.3, 1100, 1900); // Map voltage to duty cyc
 __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, timeON); // Update PWM duty cycle based on ADC reading
 ```
 
+## Gamma Correction Example
+
+A gamma correction is commonly used to make LED brightness appear more linear to human vision. Humans perceive brightness logarithmically, so a linear PWM value does not look linear.
+
+```C
+/* USER CODE BEGIN Includes */
+#include <cmath>
+/* USER CODE END Includes */
+```
+
+Add the following snippet to USER CODE BEGIN PFP:
+```C
+uint16_t gammaCorrect(uint16_t input, float gamma)
+{
+    float normalized = (float)input / 4095.0f;
+    float corrected = powf(normalized, gamma);
+    return (uint16_t)(corrected * 4095.0f + 0.5f);
+}
+```
+
+And change to the following:
+```C
+/* USER CODE BEGIN 3 */
+if (adcValue < 50)
+	adcValue = 0; // Simple thresholding to avoid noise at low values
+float potVoltage = analogToVoltage(adcValue); // Convert ADC value to voltage
+float dutyCycle1 = map(potVoltage, 0.0, 3.3, 0.0, 2000); // Map voltage to duty cycle percentage
+uint16_t correctedValue = gammaCorrect(adcValue, 2.2f); // Apply gamma correction to the ADC value
+float dutyCycle2 = map(correctedValue, 0.0, 4095.0, 0.0, 2000); // Map gamma-corrected value to duty cycle percentage
+
+__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, dutyCycle1); // Update PWM duty cycle based on ADC reading using gamma correction
+__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, dutyCycle2); // Update PWM duty cycle based on ADC reading
+/* USER CODE END 3 */
+```

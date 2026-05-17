@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <math.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,8 +58,8 @@ static void MX_DMA_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_USART2_UART_Init(void);
+
 /* USER CODE BEGIN PFP */
-float analogToVoltage(unsigned int val);
 
 /*
  * @brief Utility function to map a value from one range to another
@@ -81,6 +81,21 @@ float map(float x, float in_min, float in_max, float out_min, float out_max) { /
 float analogToVoltage(unsigned int val) {
 	return ((float) val * 3.3) / 4095;
 }
+
+
+/*
+ * @brief Applies gamma correction to a 12-bit ADC value
+ * @param input The raw ADC value (0-4095)
+ * @param gamma The gamma correction factor (e.g., 2.2 for typical displays)
+ * @return The gamma-corrected ADC value (0-4095)
+ */
+uint16_t gammaCorrect(uint16_t input, float gamma)
+{
+    float normalized = (float)input / 4095.0f;
+    float corrected = powf(normalized, gamma);
+    return (uint16_t)(corrected * 4095.0f + 0.5f);
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -118,6 +133,7 @@ int main(void) {
 	/* USER CODE BEGIN 2 */
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*) &adcValue, 1); // Start ADC in DMA mode, storing result in adcValue
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3); // Start PWM on TIM3 Channel 3
+	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2); // Start PWM on TIM3 Channel 2
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
@@ -130,8 +146,12 @@ int main(void) {
 		if (adcValue < 50)
 			adcValue = 0; // Simple thresholding to avoid noise at low values
 		float potVoltage = analogToVoltage(adcValue); // Convert ADC value to voltage
-		float dutyCycle = map(potVoltage, 0.0, 3.3, 0.0, 2000); // Map voltage to duty cycle percentage
-		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3,dutyCycle );// Update PWM duty cycle based on ADC reading
+		float dutyCycle1 = map(potVoltage, 0.0, 3.3, 0.0, 2000); // Map voltage to duty cycle percentage
+		uint16_t correctedValue = gammaCorrect(adcValue, 2.2f); // Apply gamma correction to the ADC value
+		float dutyCycle2 = map(correctedValue, 0.0, 4095.0, 0.0, 2000); // Map gamma-corrected value to duty cycle percentage
+
+		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, dutyCycle1); // Update PWM duty cycle based on ADC reading using gamma correction
+		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, dutyCycle2); // Update PWM duty cycle based on ADC reading
 
 		// Compact version without intermediate variables:
 //		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, adcValue * (htim3.Init.Period + 1) / 4095); // Directly set compare value based on ADC reading
@@ -287,6 +307,10 @@ static void MX_TIM3_Init(void) {
 	sConfigOC.Pulse = 0;
 	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
 	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+	if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_2)
+			!= HAL_OK) {
+		Error_Handler();
+	}
 	if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_3)
 			!= HAL_OK) {
 		Error_Handler();
