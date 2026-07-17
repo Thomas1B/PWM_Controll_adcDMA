@@ -158,9 +158,8 @@ int main(void)
 //		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, adcValue * (htim3.Init.Period + 1) / 4095); // Directly set compare value based on ADC reading
 
 		// Control for ESC
-		float pulseWidth = map(potVoltage, 0.0, 3.3, 1100, 1900); // Map voltage to duty cycle percentage
-		printf("%0.2f\n", pulseWidth); // Print duty cycle for debugging")
-		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, pulseWidth); // Update PWM duty cycle based on ADC reading
+		float pulseWidth = (map(potVoltage, 0.0, 3.3, 1100, 1900)); // Map voltage to duty cycle percentage
+		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, pulseWidth);
 	}
   /* USER CODE END 3 */
 }
@@ -293,7 +292,7 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 90-1;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 2000-1;
+  htim3.Init.Period = 10000-1;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
